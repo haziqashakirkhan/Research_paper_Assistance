@@ -1,4 +1,3 @@
-```text
 fastapi
 uvicorn
 python-multipart
@@ -9,4 +8,3 @@ pdfplumber
 numpy
 google-generativeai
 langchain-google-genai
-```
