@@ -18,7 +18,7 @@ app = FastAPI(
 # Folders
 # -----------------------------
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = "/tmp/uploads" if os.getenv("VERCEL") else "uploads"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
