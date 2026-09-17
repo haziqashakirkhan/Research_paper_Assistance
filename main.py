@@ -44,6 +44,22 @@ templates = Jinja2Templates(
 
 
 # -----------------------------
+# Startup Event
+# -----------------------------
+
+@app.on_event("startup")
+async def startup_event():
+    if os.path.exists(UPLOAD_FOLDER):
+        for filename in os.listdir(UPLOAD_FOLDER):
+            if filename.lower().endswith(".pdf"):
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                try:
+                    add_pdf(file_path, filename)
+                except Exception as e:
+                    print(f"Error auto-loading {filename}: {e}")
+
+
+# -----------------------------
 # Home page
 # -----------------------------
 
