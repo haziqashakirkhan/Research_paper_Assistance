@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Research Paper Assistant</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Archivo:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div>
+
+            <p class="eyebrow">
+                RAG WORKSPACE
+            </p>
+
+            <h1>
+                Research Paper Assistant
+            </h1>
+
+            <p class="subtitle">
+                Ask questions. Find evidence. Read smarter.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= WORKSPACE ================= -->
+
+    <main class="workspace">
+
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="section-heading">
+
+                <p class="section-label">
+                    KNOWLEDGE BASE
+                </p>
+
+                <h2>
+                    Your papers
+                </h2>
+
+                <p>
+                    Upload research papers to build
+                    your private knowledge base.
+                </p>
+
+            </div>
+
+
+            <!-- Upload Form -->
+
+            <form
+                id="upload-form"
+                class="upload-form"
+                action="/upload"
+                method="post"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    id="file-input"
+                    class="file-input"
+                    type="file"
+                    name="files"
+                    accept=".pdf"
+                    multiple
+                    hidden
+                >
+
+
+                <!-- Dropzone -->
+
+                <label
+                    for="file-input"
+                    id="dropzone-label"
+                    class="dropzone"
+                >
+
+                    <div class="dropzone-icon">
+                        +
+                    </div>
+
+                    <div class="dropzone-text">
+
+                        <strong>
+                            Drop PDF files here
+                        </strong>
+
+                        <span>
+                            or browse from your computer
+                        </span>
+
+                    </div>
+
+                    <small>
+                        PDF only · Multiple files supported
+                    </small>
+
+                </label>
+
+
+                <!-- Selected Files -->
+
+                <ul
+                    id="file-list"
+                    class="file-list"
+                    hidden
+                >
+                </ul>
+
+
+                <!-- Upload Button -->
+
+                <button
+                    id="upload-btn"
+                    class="button button-primary"
+                    type="submit"
+                    disabled
+                >
+                    Add to library
+                </button>
+
+            </form>
+
+
+            <!-- Server Message -->
+
+            {% if message %}
+
+                {% set is_error =
+                    ('Error' in message)
+                    or
+                    ('Unsupported' in message)
+                    or
+                    ('Could not' in message)
+                %}
+
+                <div
+                    class="notice
+                    {% if is_error %}
+                        notice-error
+                    {% else %}
+                        notice-success
+                    {% endif %}"
+                >
+                    {{ message }}
+                </div>
+
+            {% endif %}
+
+        </aside>
+
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <section class="content">
+
+
+            <!-- Question Section -->
+
+            <div class="question-section">
+
+                <p class="section-label">
+                    RESEARCH QUERY
+                </p>
+
+                <h2>
+                    What would you like to know?
+                </h2>
+
+                <p class="question-description">
+                    Ask a question about the research papers
+                    you've uploaded.
+                </p>
+
+
+                <!-- Ask Form -->
+
+                <form
+                    id="ask-form"
+                    class="ask-form"
+                    action="/ask"
+                    method="post"
+                >
+
+                    <div class="input-wrapper">
+
+                        <input
+                            id="question"
+                            class="question-input"
+                            type="text"
+                            name="question"
+                            placeholder="e.g. What methodology did the authors use?"
+                            autocomplete="off"
+                            required
+                            value="{{ question if question else '' }}"
+                        >
+
+                        <button
+                            id="ask-btn"
+                            class="button button-primary ask-button"
+                            type="submit"
+                        >
+                            Ask
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <!-- Suggestions -->
+
+                <div class="suggestions">
+
+                    <span>
+                        Try:
+                    </span>
+
+                    <button
+                        type="button"
+                        class="suggestion"
+                        data-question="Summarize this paper."
+                    >
+                        Summarize this paper
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion"
+                        data-question="What problem does this paper solve?"
+                    >
+                        Problem
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion"
+                        data-question="What methodology is used?"
+                    >
+                        Methodology
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion"
+                        data-question="What are the key findings?"
+                    >
+                        Key findings
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion"
+                        data-question="What limitations and future work are mentioned?"
+                    >
+                        Limitations
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= ANSWER ================= -->
+
+            <section
+                class="answer-section
+                {% if answer %}
+                    answer-visible
+                {% endif %}"
+            >
+
+                {% if answer %}
+
+                    <article class="answer-card">
+
+
+                        <!-- Question -->
+
+                        {% if question %}
+
+                            <div class="asked-question">
+
+                                <span>
+                                    QUESTION
+                                </span>
+
+                                <p>
+                                    "{{ question }}"
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- Answer -->
+
+                        <div class="answer-content">
+
+                            <p class="section-label">
+                                ANSWER
+                            </p>
+
+                            <div class="answer-text">
+                                {{ answer }}
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Sources -->
+
+                        {% if sources %}
+
+                            <div class="sources">
+
+                                <div class="sources-heading">
+
+                                    <p class="section-label">
+                                        SOURCES
+                                    </p>
+
+                                    <span>
+                                        Retrieved from your papers
+                                    </span>
+
+                                </div>
+
+
+                                <div class="source-list">
+
+                                    {% for source in sources %}
+
+                                        <div class="source-item">
+
+                                            <div class="source-number">
+                                                {{ loop.index }}
+                                            </div>
+
+                                            <div class="source-info">
+
+                                                <strong>
+                                                    {{ source.document }}
+                                                </strong>
+
+                                                <span>
+                                                    Page {{ source.page }}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </article>
+
+
+                {% else %}
+
+
+                    <!-- Empty State -->
+
+                    <div class="empty-state">
+
+                        <div class="empty-line"></div>
+
+                        <p class="section-label">
+                            RESEARCH READER
+                        </p>
+
+                        <h3>
+                            Your answer will appear here.
+                        </h3>
+
+                        <p>
+                            Upload one or more research papers,
+                            then ask a question. The assistant
+                            retrieves relevant sections before
+                            generating an answer.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <span>
+            Research Paper Assistant
+        </span>
+
+        <span>
+            FastAPI · RAG · Gemini
+        </span>
+
+    </footer>
+
+</div>
+
+
+<!-- JavaScript -->
+
+<script src="/static/scripts.js"></script>
+
+</body>
+</html>
+
